@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Edit plans mockup</title>
+<style>
+  :root {
+    --ink: #1c1c1a; --ink2: #3f3f3b; --ink3: #5b5b57; --muted: #8a8a85; --faint: #a5a59f;
+    --line: #ecece7; --line2: #f1f1ec; --field: #e3e3de; --page: #f7f7f4;
+    --income: #2f7d4f; --savings: #3a6ea5; --bills: #b7791f; --expense: #b4443c; --red: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e9e4; color: var(--ink); font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .intro { max-width: 1180px; margin: 0 auto; padding: 28px 16px 8px; }
+  .intro h1 { margin: 0 0 6px; font-size: 22px; }
+  .intro p { margin: 4px 0; color: var(--ink3); max-width: 760px; }
+  h2.section { max-width: 1180px; margin: 28px auto 10px; padding: 0 16px; font-size: 15px; color: var(--ink2); }
+  .row { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; }
+  .shot { width: 340px; }
+  .cap { font-size: 12px; color: var(--ink3); margin: 0 0 6px; min-height: 34px; }
+  .cap b { color: var(--ink); }
+
+  /* phone frame */
+  .phone { position: relative; width: 340px; height: 640px; overflow: hidden; border-radius: 34px; border: 8px solid #222; background: var(--page); }
+  .phone .scroll { padding: 14px 12px; }
+  .dim::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+
+  /* dashboard pieces */
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 10px; }
+  .card-h { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; }
+  .card-h .t { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink2); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .card-h .n { font-weight: 700; display: flex; gap: 8px; align-items: center; }
+  .card-h .n i { font-style: normal; font-size: 11px; color: var(--faint); }
+  .card-b { border-top: 1px solid var(--line2); }
+  .add { padding: 9px 14px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--line2); }
+  .grp { display: flex; justify-content: space-between; padding: 6px 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--ink2); border-top: 1px solid var(--line2); }
+  .grp span:first-child { display: flex; align-items: center; gap: 6px; }
+  .grp .sq { width: 10px; height: 10px; border-radius: 3px; }
+  .grp .edit { font-weight: 500; letter-spacing: 0; color: var(--ink3); margin-left: 4px; font-size: 11px; }
+  .r { display: flex; justify-content: space-between; gap: 10px; padding: 8px 14px; font-size: 13px; border-top: 1px solid var(--line2); }
+  .r:first-child { border-top: 0; }
+  .r .amt { font-variant-numeric: tabular-nums; }
+  .r .sub { color: var(--muted); font-size: 11px; }
+  .r.muted { color: var(--muted); }
+  .r .chev { color: var(--faint); margin-left: 6px; }
+  .label-s { padding: 6px 14px 2px; font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--muted); border-top: 1px solid var(--line2); }
+  .tap { outline: 2px solid var(--savings); outline-offset: -2px; border-radius: 6px; background: #f3f7fb; }
+  .hint { position: absolute; font-size: 11px; background: var(--ink); color: #fff; border-radius: 8px; padding: 4px 8px; z-index: 5; }
+
+  /* bottom sheet (phone) */
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: #fff; border-radius: 24px 24px 0 0; padding: 18px 18px 22px; box-shadow: 0 -10px 30px rgba(0,0,0,.15); }
+  .grab { width: 36px; height: 4px; border-radius: 4px; background: #ddd; margin: -8px auto 12px; }
+  .sh { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .sh h3 { margin: 0; font-size: 18px; }
+  .sh .x { width: 32px; height: 32px; margin: -6px -6px 0 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--muted); font-size: 22px; }
+  .meta { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+  .f { margin-bottom: 11px; }
+  .f label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .in { width: 100%; border: 1px solid var(--field); border-radius: 12px; padding: 8px 12px; font-size: 14px; background: #fff; display: flex; justify-content: space-between; align-items: center; min-height: 38px; }
+  .in.big { font-size: 24px; font-weight: 700; }
+  .in.focus { border-color: var(--savings); }
+  .in.bad { border-color: var(--red); }
+  .in .caret { color: var(--faint); font-size: 12px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .err { margin: 4px 0 0; font-size: 12px; color: var(--red); }
+  .alert { font-size: 13px; color: var(--red); margin: 0 0 10px; }
+  .btns { display: flex; gap: 8px; padding-top: 4px; }
+  .b { flex: 1; text-align: center; border-radius: 12px; padding: 10px 0; font-size: 14px; }
+  .b.main { flex: 2; background: var(--ink); color: #fff; font-weight: 600; }
+  .b.main.busy { opacity: .6; }
+  .b.ghost { border: 1px solid var(--field); color: var(--ink3); }
+  .b.warn { border: 1px solid #e3c2bf; color: var(--expense); }
+  .b.danger { background: var(--red); color: #fff; font-weight: 600; }
+  .note { font-size: 12px; color: var(--ink3); background: #f6f6f2; border-radius: 10px; padding: 8px 10px; margin: 0 0 12px; }
+
+  /* "apply to" choice */
+  .q { font-size: 13px; color: var(--ink3); margin: 2px 0 10px; }
+  .opt { border: 1px solid var(--field); border-radius: 14px; padding: 11px 13px; margin-bottom: 8px; }
+  .opt b { display: block; font-size: 15px; }
+  .opt span { font-size: 12px; color: var(--muted); }
+  .opt.sel { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .change { display: flex; align-items: baseline; gap: 8px; font-size: 13px; margin: 0 0 12px; }
+  .change s { color: var(--muted); }
+  .change b { font-size: 18px; }
+
+  .swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sw { width: 30px; height: 30px; border-radius: 9px; border: 2px solid transparent; }
+  .sw.on { border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff; }
+
+  /* laptop */
+  .laptop { width: 1100px; max-width: 100%; height: 600px; position: relative; overflow: hidden; border-radius: 14px; border: 8px solid #222; background: var(--page); }
+  .lap-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px 24px; }
+  .side { position: absolute; top: 0; right: 0; bottom: 0; width: 400px; z-index: 2; background: #fff; border-radius: 24px 0 0 24px; padding: 22px; box-shadow: -10px 0 30px rgba(0,0,0,.15); }
+  .lap-head { grid-column: 1 / -1; text-align: center; }
+  .lap-head h4 { margin: 0; font-size: 28px; font-weight: 800; }
+  .toast { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--ink); color: #fff; font-size: 12px; padding: 8px 12px; border-radius: 10px; z-index: 3; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Edit bills, savings and expected income from the Dashboard</h1>
+  <p>Same white sheet as the expense editor: it slides up from the bottom on phones and in from the right on laptops. All numbers are placeholders. The month being viewed is <b>Oct 2026</b>.</p>
+  <p><b>Rule:</b> amount changes ask <b>“Just Oct 2026”</b> or <b>“Oct 2026 and later”</b>. Months before Oct never change. Name, group and due day apply to every month, so they don't ask.</p>
+  <p><b>Closing:</b> tapping the dimmed area outside a sheet closes it without saving, the same as ×. This applies to every sheet, including the existing expense sheet.</p>
+</div>
+
+<!-- ============ BILLS ============ -->
+<h2 class="section">1 · Bills card</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Default.</b> “＋ Add bill” sits at the top like “＋ Add expense”. Every bill row and every group header can be tapped.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,525<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--bills)">＋ Add bill</div>
+          <div class="grp" style="background:#c8d9ee88;border-top:0"><span><span class="sq" style="background:#c8d9ee"></span>HOUSING <span class="edit">✎</span></span><span>$2,245.00</span></div>
+          <div class="r"><span>Rent</span><span class="amt">$2,100.00</span></div>
+          <div class="r"><span>Internet</span><span class="amt">$60.00</span></div>
+          <div class="r"><span>Electricity</span><span class="amt">$85.00</span></div>
+          <div class="grp" style="background:#f3d9b088"><span><span class="sq" style="background:#f3d9b0"></span>AUTO <span class="edit">✎</span></span><span>$260.00</span></div>
+          <div class="r"><span>Car insurance</span><span class="amt">$140.00</span></div>
+          <div class="r"><span>Fuel</span><span class="amt">$120.00</span></div>
+          <div class="grp" style="background:#d8cdee88"><span><span class="sq" style="background:#d8cdee"></span>SUBSCRIPTIONS <span class="edit">✎</span></span><span>$20.97</span></div>
+          <div class="r"><span>Music</span><span class="amt">$10.99</span></div>
+          <div class="r"><span>Cloud storage</span><span class="amt">$2.99</span></div>
+          <div class="r"><span>Domain</span><span class="amt">$6.99</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Empty month.</b> Nothing planned yet. You can still add a bill from here.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$0<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--bills)">＋ Add bill</div>
+          <div class="r muted" style="border-top:0">No bills this month.</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<h2 class="section">2 · Edit a bill (tap “Rent”)</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Edit.</b> Amount first, as in the expense sheet. <b>Stop</b> replaces Delete, so past months keep their amounts.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Rent</h3><span class="x">×</span></div>
+        <p class="meta">Oct 2026 · planned</p>
+        <div class="f"><label>Amount</label><div class="in big focus">2,150.00</div></div>
+        <div class="f"><label>Name</label><div class="in">Rent</div></div>
+        <div class="two">
+          <div class="f"><label>Group</label><div class="in">Housing <span class="caret">▾</span></div></div>
+          <div class="f"><label>Due day</label><div class="in">1</div></div>
+        </div>
+        <div class="btns"><span class="b warn">Stop</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Save → choose.</b> Shown only when the amount changed. The sheet swaps to this question, and Back returns to the form.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Apply to which months?</h3><span class="x">×</span></div>
+        <div class="change"><span>Rent</span><s>$2,100.00</s><span>→</span><b>$2,150.00</b></div>
+        <div class="opt"><b>Just Oct 2026</b><span>Nov 2026 goes back to $2,100.00</span></div>
+        <div class="opt sel"><b>Oct 2026 and later</b><span>Sep 2026 and earlier stay $2,100.00</span></div>
+        <div class="btns"><span class="b ghost">Back</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Saving.</b> Buttons are disabled while it saves. The sheet closes when done, and the card and Safe to spend update.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Apply to which months?</h3><span class="x">×</span></div>
+        <div class="change"><span>Rent</span><s>$2,100.00</s><span>→</span><b>$2,150.00</b></div>
+        <div class="opt"><b>Just Oct 2026</b><span>Nov 2026 goes back to $2,100.00</span></div>
+        <div class="opt sel"><b>Oct 2026 and later</b><span>Sep 2026 and earlier stay $2,100.00</span></div>
+        <div class="btns"><span class="b ghost">Back</span><span class="b main busy">Saving…</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="margin-top:22px">
+  <div class="shot">
+    <p class="cap"><b>Error: bad amount.</b> Same message as the expense sheet. It stays on the form, so no question is asked yet.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Rent</h3><span class="x">×</span></div>
+        <p class="meta">Oct 2026 · planned</p>
+        <div class="f"><label>Amount</label><div class="in big bad">21.505</div><p class="err">Enter an amount like 12.50 (more than 0, up to 2 decimals).</p></div>
+        <div class="f"><label>Name</label><div class="in">Rent</div></div>
+        <div class="two">
+          <div class="f"><label>Group</label><div class="in">Housing <span class="caret">▾</span></div></div>
+          <div class="f"><label>Due day</label><div class="in">1</div></div>
+        </div>
+        <div class="btns"><span class="b warn">Stop</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Error: save failed</b> (offline, server error). Your choice is kept so you can try again.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Apply to which months?</h3><span class="x">×</span></div>
+        <div class="change"><span>Rent</span><s>$2,100.00</s><span>→</span><b>$2,150.00</b></div>
+        <div class="opt"><b>Just Oct 2026</b><span>Nov 2026 goes back to $2,100.00</span></div>
+        <div class="opt sel"><b>Oct 2026 and later</b><span>Sep 2026 and earlier stay $2,100.00</span></div>
+        <p class="alert">Couldn't save. Check your connection and try again.</p>
+        <div class="btns"><span class="b ghost">Back</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>A bill already paid this month.</b> If a payment was recorded for Oct, the amount shown is what you paid. “Just Oct 2026” corrects that payment, and “and later” also changes the plan.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Electricity</h3><span class="x">×</span></div>
+        <p class="meta">Oct 2026 · paid Oct 12 · plan $85.00</p>
+        <div class="f"><label>Amount</label><div class="in big focus">92.40</div></div>
+        <div class="f"><label>Name</label><div class="in">Electricity</div></div>
+        <div class="two">
+          <div class="f"><label>Group</label><div class="in">Housing <span class="caret">▾</span></div></div>
+          <div class="f"><label>Due day</label><div class="in">12</div></div>
+        </div>
+        <div class="btns"><span class="b warn">Stop</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section">3 · Stop a bill (tap “Stop” on Fuel)</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Stop → choose.</b> Same question. Skip one month, or stop for good from Oct. Nothing is deleted, and earlier months keep their amounts.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Stop Fuel?</h3><span class="x">×</span></div>
+        <div class="opt"><b>Just Oct 2026</b><span>Skip this month. $120.00 again from Nov 2026</span></div>
+        <div class="opt sel"><b>Oct 2026 and later</b><span>Sep 2026 and earlier stay $120.00</span></div>
+        <div class="btns"><span class="b ghost">Back</span><span class="b danger">Stop Fuel</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>After stopping.</b> Fuel is gone from Oct onward. Going back to Sep still shows it.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,405<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--bills)">＋ Add bill</div>
+          <div class="grp" style="background:#c8d9ee88;border-top:0"><span><span class="sq" style="background:#c8d9ee"></span>HOUSING <span class="edit">✎</span></span><span>$2,245.00</span></div>
+          <div class="r"><span>Rent</span><span class="amt">$2,100.00</span></div>
+          <div class="r"><span>Internet</span><span class="amt">$60.00</span></div>
+          <div class="r"><span>Electricity</span><span class="amt">$85.00</span></div>
+          <div class="grp" style="background:#f3d9b088"><span><span class="sq" style="background:#f3d9b0"></span>AUTO <span class="edit">✎</span></span><span>$140.00</span></div>
+          <div class="r"><span>Car insurance</span><span class="amt">$140.00</span></div>
+          <div class="grp" style="background:#d8cdee88"><span><span class="sq" style="background:#d8cdee"></span>SUBSCRIPTIONS <span class="edit">✎</span></span><span>$20.97</span></div>
+          <div class="r"><span>Music</span><span class="amt">$10.99</span></div>
+          <div class="r"><span>Cloud storage</span><span class="amt">$2.99</span></div>
+          <div class="r"><span>Domain</span><span class="amt">$6.99</span></div>
+        </div>
+      </div>
+      <div class="toast" style="bottom:22px">Fuel stopped from Oct 2026</div>
+    </div></div>
+  </div>
+</div>
+
+<h2 class="section">4 · Add a bill · edit a group</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>＋ Add bill.</b> Starts in the month you're viewing and repeats every month until you stop it. No question needed.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Add bill</h3><span class="x">×</span></div>
+        <p class="meta">Every month from Oct 2026</p>
+        <div class="f"><label>Amount</label><div class="in big focus">15.49</div></div>
+        <div class="f"><label>Name</label><div class="in">Video streaming</div></div>
+        <div class="two">
+          <div class="f"><label>Group</label><div class="in">Subscriptions <span class="caret">▾</span></div></div>
+          <div class="f"><label>Due day</label><div class="in" style="color:var(--faint)">optional</div></div>
+        </div>
+        <div class="btns"><span class="b main">Add bill</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Tap a group header</b> (✎ HOUSING): rename it or pick a color. The Group menu in the bill sheet has “＋ New group…” at the bottom.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Housing</h3><span class="x">×</span></div>
+        <p class="meta">Group · 3 bills</p>
+        <div class="f"><label>Name</label><div class="in focus">Housing</div></div>
+        <div class="f"><label>Color</label>
+          <div class="swatches">
+            <span class="sw on" style="background:#c8d9ee"></span><span class="sw" style="background:#f3d9b0"></span><span class="sw" style="background:#d8cdee"></span>
+            <span class="sw" style="background:#cfe8d5"></span><span class="sw" style="background:#f4c9c4"></span><span class="sw" style="background:#f2e6a7"></span>
+            <span class="sw" style="background:#d6e9ec"></span><span class="sw" style="background:#e5e5e0"></span>
+          </div>
+        </div>
+        <div class="btns" style="margin-top:14px"><span class="b warn">Delete group</span><span class="b main">Save</span></div>
+        <p class="meta" style="margin:8px 0 0">Delete only works when the group has no bills.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SAVINGS ============ -->
+<h2 class="section">5 · Savings card: same sheet</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Savings card.</b> “＋ Add saving” at the top. Cash plans can be tapped. “From paycheck” rows look like any other row. They come from payslips, so tapping one opens a read-only note.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--savings)"></span>Savings</span><span class="n">$700<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--savings)">＋ Add saving</div>
+          <div class="r" style="border-top:0"><span>High-yield savings</span><span class="amt">$500.00</span></div>
+          <div class="r"><span>Travel fund</span><span class="amt">$200.00</span></div>
+          <div class="grp" style="background:#3a6ea51a;color:#2b4f78"><span>FROM PAYCHECK</span><span>$930.00</span></div>
+          <div class="r"><span>401(k)</span><span class="amt">$620.00</span></div>
+          <div class="r"><span>Employer match</span><span class="amt">$310.00</span></div>
+          <div class="r muted" style="font-size:11px;padding:6px 14px">Already taken out of pay, so not subtracted from Safe to spend.</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Edit a savings plan.</b> Amount and name, then the same “Just Oct / Oct and later” question. Stop works like it does for bills.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>High-yield savings</h3><span class="x">×</span></div>
+        <p class="meta">Oct 2026 · planned</p>
+        <div class="f"><label>Amount</label><div class="in big focus">300.00</div></div>
+        <div class="two">
+          <div class="f"><label>Name</label><div class="in">High-yield savings</div></div>
+          <div class="f"><label>Day</label><div class="in" style="color:var(--faint)">optional</div></div>
+        </div>
+        <div class="btns"><span class="b warn">Stop</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Tap a “From paycheck” row.</b> Read-only, like a payslip expense.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>401(k)</h3><span class="x">×</span></div>
+        <p class="note">This comes from your paycheck. Change your contribution in Plan › Jobs, and actual amounts come from payslips.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INCOME ============ -->
+<h2 class="section">6 · Expected income: same sheet</h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Income card.</b> “＋ Add income” at the top. Expected lines (shown faded) open the plan sheet, and received lines open the entry sheet as they do today.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--income)"></span>Income</span><span class="n">$5,060<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--income)">＋ Add income</div>
+          <div class="r" style="border-top:0"><span>Wage (Example Co)<br><span class="sub">Oct 3</span></span><span class="amt">$2,180.00</span></div>
+          <div class="r"><span>Unemployment<br><span class="sub">Oct 6</span></span><span class="amt">$450.00</span></div>
+          <div class="r muted"><span>Wage (Example Co)<br><span class="sub">Oct 17 · expected</span></span><span class="amt">$2,180.00</span></div>
+          <div class="r muted"><span>Unemployment<br><span class="sub">Oct 20 · expected</span></span><span class="amt">$450.00</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Edit expected income</b> (Unemployment). Amount per payment, how often, and an optional end date. Save asks the same question.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Unemployment</h3><span class="x">×</span></div>
+        <p class="meta">Expected · every 2 weeks since Mar 2, 2026</p>
+        <div class="f"><label>Amount per payment</label><div class="in big focus">450.00</div></div>
+        <div class="f"><label>Name</label><div class="in">Unemployment</div></div>
+        <div class="two">
+          <div class="f"><label>How often</label><div class="in">Every 2 weeks <span class="caret">▾</span></div></div>
+          <div class="f"><label>Ends</label><div class="in">Dec 31, 2026</div></div>
+        </div>
+        <div class="btns"><span class="b warn">Stop</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>＋ Add income.</b> One-time or repeating. One-time income on a past date is recorded as received, like the Activity “＋ Add income”.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Add income</h3><span class="x">×</span></div>
+        <p class="meta">Expected income</p>
+        <div class="f"><label>Amount</label><div class="in big focus">1,200.00</div></div>
+        <div class="f"><label>Name</label><div class="in">Freelance project</div></div>
+        <div class="two">
+          <div class="f"><label>How often</label><div class="in">Once <span class="caret">▾</span></div></div>
+          <div class="f"><label>Date</label><div class="in">Oct 28, 2026</div></div>
+        </div>
+        <div class="f"><label>Category</label><div class="in">Side income <span class="caret">▾</span></div></div>
+        <div class="btns"><span class="b main">Add income</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Tap an expected paycheck.</b> It's estimated from your job, so it's read-only here.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Wage (Example Co)</h3><span class="x">×</span></div>
+        <p class="meta">Oct 17 · expected $2,180.00</p>
+        <p class="note">Estimated from your job's pay. Change pay in Plan › Jobs. The real amount replaces this when you add the payslip.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LAPTOP ============ -->
+<h2 class="section">7 · Laptop: the sheet opens from the right, and the Dashboard stays visible</h2>
+<div class="row" style="padding-bottom:40px">
+  <div class="laptop dim">
+    <div class="lap-inner">
+      <div class="lap-head"><h4>Oct 2026</h4></div>
+      <div>
+        <div class="card"><div class="card-h"><span class="t"><span class="dot" style="background:var(--income)"></span>Income</span><span class="n">$5,060<i>▾</i></span></div></div>
+        <div class="card"><div class="card-h"><span class="t"><span class="dot" style="background:var(--savings)"></span>Savings</span><span class="n">$700<i>▾</i></span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,525<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add" style="color:var(--bills)">＋ Add bill</div>
+          <div class="grp" style="background:#c8d9ee88;border-top:0"><span><span class="sq" style="background:#c8d9ee"></span>HOUSING <span class="edit">✎</span></span><span>$2,245.00</span></div>
+          <div class="r tap"><span>Rent</span><span class="amt">$2,100.00</span></div>
+          <div class="r"><span>Internet</span><span class="amt">$60.00</span></div>
+          <div class="r"><span>Electricity</span><span class="amt">$85.00</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="sh"><h3>Apply to which months?</h3><span class="x">×</span></div>
+      <div class="change"><span>Rent</span><s>$2,100.00</s><span>→</span><b>$2,150.00</b></div>
+      <div class="opt"><b>Just Oct 2026</b><span>Nov 2026 goes back to $2,100.00</span></div>
+      <div class="opt sel"><b>Oct 2026 and later</b><span>Sep 2026 and earlier stay $2,100.00</span></div>
+      <div class="btns"><span class="b ghost">Back</span><span class="b main">Save</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

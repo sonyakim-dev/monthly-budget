@@ -1,0 +1,13 @@
+{
+  "name": "Sumday",
+  "short_name": "Sumday",
+  "description": "Track income, spending and savings.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafaf8",
+  "theme_color": "#1c1c1a",
+  "icons": [
+    { "src": "/brand/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/brand/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

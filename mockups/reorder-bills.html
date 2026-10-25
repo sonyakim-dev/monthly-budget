@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reorder bills mockup</title>
+<style>
+  :root {
+    --ink: #1c1c1a; --ink2: #3f3f3b; --ink3: #5b5b57; --muted: #8a8a85; --faint: #a5a59f;
+    --line: #ecece7; --line2: #f1f1ec; --field: #e3e3de; --page: #f7f7f4;
+    --income: #2f7d4f; --savings: #3a6ea5; --bills: #b7791f; --expense: #b4443c; --red: #c0392b;
+    --housing: #f5d76e; --auto: #9ccc9c; --subs: #b9a8e0;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e9e4; color: var(--ink); font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .intro { max-width: 1180px; margin: 0 auto; padding: 28px 16px 8px; }
+  .intro h1 { margin: 0 0 6px; font-size: 22px; }
+  .intro p { margin: 4px 0; color: var(--ink3); max-width: 780px; }
+  h2.section { max-width: 1180px; margin: 30px auto 10px; padding: 0 16px; font-size: 16px; color: var(--ink); }
+  h2.section small { display: block; font-weight: 400; font-size: 13px; color: var(--ink3); margin-top: 2px; }
+  .row { max-width: 1180px; margin: 0 auto; padding: 0 16px; display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; }
+  .shot { width: 340px; }
+  .cap { font-size: 12px; color: var(--ink3); margin: 0 0 6px; min-height: 34px; }
+  .cap b { color: var(--ink); }
+
+  .phone { position: relative; width: 340px; height: 640px; overflow: hidden; border-radius: 34px; border: 8px solid #222; background: var(--page); }
+  .phone .scroll { padding: 14px 12px; }
+  .dim::after { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.4); z-index: 1; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 10px; }
+  .card-h { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; }
+  .card-h .t { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--ink2); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .card-h .n { font-weight: 700; display: flex; gap: 8px; align-items: center; }
+  .card-h .n i { font-style: normal; font-size: 11px; color: var(--faint); }
+  .card-b { border-top: 1px solid var(--line2); }
+  .add { display: flex; justify-content: space-between; padding: 9px 14px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--line2); color: var(--bills); }
+  .add .link { font-weight: 500; color: var(--ink3); }
+  .grp { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--ink2); border-top: 1px solid var(--line2); min-height: 28px; }
+  .grp > span:first-child { display: flex; align-items: center; gap: 6px; }
+  .grp .sq { width: 10px; height: 10px; border-radius: 3px; }
+  .grp .edit { font-weight: 400; color: var(--muted); }
+  .r { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 14px; font-size: 13px; border-top: 1px solid var(--line2); }
+  .amt { font-variant-numeric: tabular-nums; }
+  .moved { background: #f3f7fb; }
+
+  /* up / down buttons */
+  .ud { display: inline-flex; gap: 4px; }
+  .ud span { width: 30px; height: 26px; border: 1px solid var(--field); border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: var(--ink2); background: #fff; font-weight: 600; letter-spacing: 0; }
+  .ud span.off { color: #d4d4ce; border-color: #efefea; }
+  .grp .ud span { height: 22px; width: 26px; background: rgba(255,255,255,.7); }
+
+  .bar { display: flex; justify-content: space-between; align-items: center; padding: 9px 14px; font-size: 13px; border-bottom: 1px solid var(--line2); background: #fbfbf9; }
+  .bar b { font-weight: 600; color: var(--ink2); }
+  .done { background: var(--ink); color: #fff; font-weight: 600; border-radius: 10px; padding: 5px 12px; font-size: 13px; }
+
+  .sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; background: #fff; border-radius: 24px 24px 0 0; padding: 18px 18px 22px; box-shadow: 0 -10px 30px rgba(0,0,0,.15); }
+  .grab { width: 36px; height: 4px; border-radius: 4px; background: #ddd; margin: -8px auto 12px; }
+  .sh { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .sh h3 { margin: 0; font-size: 18px; }
+  .sh .x { width: 32px; height: 32px; margin: -6px -6px 0 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: var(--muted); font-size: 22px; }
+  .meta { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+  .f { margin-bottom: 11px; }
+  .lbl { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .in { width: 100%; border: 1px solid var(--field); border-radius: 12px; padding: 8px 12px; font-size: 14px; background: #fff; min-height: 38px; }
+  .swatches { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sw { width: 28px; height: 28px; border-radius: 9px; border: 2px solid transparent; }
+  .sw.on { border-color: var(--ink); box-shadow: inset 0 0 0 2px #fff; }
+  .list { border: 1px solid var(--field); border-radius: 12px; overflow: hidden; }
+  .list .r:first-child { border-top: 0; }
+  .btns { display: flex; gap: 8px; padding-top: 4px; }
+  .b { flex: 1; text-align: center; border-radius: 12px; padding: 10px 0; font-size: 14px; }
+  .b.main { flex: 2; background: var(--ink); color: #fff; font-weight: 600; }
+  .b.warn { border: 1px solid #e3c2bf; color: var(--expense); opacity: .5; }
+  .alert { font-size: 12px; color: var(--red); margin: 6px 0 0; }
+  .small { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+
+  .laptop { width: 1100px; max-width: 100%; height: 560px; position: relative; overflow: hidden; border-radius: 14px; border: 8px solid #222; background: var(--page); }
+  .lap-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px 24px; }
+  .lap-head { grid-column: 1 / -1; text-align: center; }
+  .lap-head h4 { margin: 0; font-size: 28px; font-weight: 800; }
+  .side { position: absolute; top: 0; right: 0; bottom: 0; width: 400px; z-index: 2; background: #fff; border-radius: 24px 0 0 24px; padding: 22px; box-shadow: -10px 0 30px rgba(0,0,0,.15); }
+  .pick { max-width: 1180px; margin: 30px auto 50px; padding: 0 16px; }
+  .pick div { background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); max-width: 780px; }
+  .pick p { margin: 4px 0; color: var(--ink3); }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Reorder bills and groups</h1>
+  <p>Two directions to compare. Placeholder data; the month is <b>Oct 2026</b>.</p>
+  <p><b>Both:</b> ↑ ↓ move a bill within its group, or a whole group up or down. Each tap saves straight away in one step, so there's no Save. If saving fails, the row moves back and a message says so. The first row's ↑ and the last row's ↓ are greyed out. Moving a bill to <i>another</i> group stays in the bill sheet (Group menu).</p>
+</div>
+
+<!-- ================= A ================= -->
+<h2 class="section">A · In the group sheet
+  <small>Tap ✎ on a group header. The sheet gets an “Order” list for that group's bills and a “Group position” row. The Bills card itself doesn't change.</small></h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Group sheet.</b> Below the colors: this group's bills in order, each with ↑ ↓. “Internet” was just moved up (light blue).</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Housing</h3><span class="x">×</span></div>
+        <p class="meta">Group · 3 bills</p>
+        <div class="f"><div class="lbl">Name</div><div class="in">Housing</div></div>
+        <div class="f"><div class="lbl">Color</div>
+          <div class="swatches"><span class="sw on" style="background:#f5d76e"></span><span class="sw" style="background:#f2b880"></span><span class="sw" style="background:#f0a8a0"></span><span class="sw" style="background:#b9a8e0"></span><span class="sw" style="background:#8fb8e8"></span><span class="sw" style="background:#8fd0d0"></span><span class="sw" style="background:#9ccc9c"></span><span class="sw" style="background:#c8c8c0"></span></div>
+        </div>
+        <div class="f"><div class="lbl">Order</div>
+          <div class="list">
+            <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+            <div class="r moved"><span>Internet</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+            <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          </div>
+        </div>
+        <div class="f"><div class="lbl"><span>Group position · 1st of 3</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div></div>
+        <div class="btns"><span class="b warn">Delete group</span><span class="b main">Save</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Saving the order failed.</b> The list goes back to how it was, with a message under it. Save still covers only name and color.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Housing</h3><span class="x">×</span></div>
+        <p class="meta">Group · 3 bills</p>
+        <div class="f"><div class="lbl">Order</div>
+          <div class="list">
+            <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+            <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+            <div class="r"><span>Internet</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          </div>
+          <p class="alert">Couldn't save the order. Check your connection and try again.</p>
+        </div>
+        <div class="f"><div class="lbl"><span>Group position · 1st of 3</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>A group with one bill</b> has no Order list. Stopped bills aren't listed (they don't show on the card), and keep their place for when they restart.</p>
+    <div class="phone dim"><div class="scroll"></div>
+      <div class="sheet">
+        <div class="grab"></div>
+        <div class="sh"><h3>Auto</h3><span class="x">×</span></div>
+        <p class="meta">Group · 1 bill</p>
+        <div class="f"><div class="lbl">Name</div><div class="in">Auto</div></div>
+        <div class="f"><div class="lbl">Color</div>
+          <div class="swatches"><span class="sw" style="background:#f5d76e"></span><span class="sw" style="background:#f2b880"></span><span class="sw" style="background:#f0a8a0"></span><span class="sw" style="background:#b9a8e0"></span><span class="sw" style="background:#8fb8e8"></span><span class="sw" style="background:#8fd0d0"></span><span class="sw on" style="background:#9ccc9c"></span><span class="sw" style="background:#c8c8c0"></span></div>
+        </div>
+        <div class="f"><div class="lbl"><span>Group position · 2nd of 3</span><span class="ud"><span>↑</span><span>↓</span></span></div></div>
+        <div class="btns"><span class="b warn">Delete group</span><span class="b main">Save</span></div>
+        <p class="small">Only an empty group can be deleted.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= B ================= -->
+<h2 class="section">B · Reorder mode on the Bills card
+  <small>A “Reorder” link next to “＋ Add bill”. In reorder mode every group and bill gets ↑ ↓, amounts stay, and tapping rows does nothing until “Done”.</small></h2>
+<div class="row">
+  <div class="shot">
+    <p class="cap"><b>Default.</b> “Reorder” sits at the right of the “＋ Add bill” row.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,526<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add"><span>＋ Add bill</span><span class="link">Reorder</span></div>
+          <div class="grp" style="background:#f5d76e55;border-top:0"><span><span class="sq" style="background:var(--housing)"></span>HOUSING <span class="edit">✎</span></span><span>$2,245.00</span></div>
+          <div class="r"><span>Rent</span><span class="amt">$2,100.00</span></div>
+          <div class="r"><span>Internet</span><span class="amt">$60.00</span></div>
+          <div class="r"><span>Electricity</span><span class="amt">$85.00</span></div>
+          <div class="grp" style="background:#9ccc9c55"><span><span class="sq" style="background:var(--auto)"></span>AUTO <span class="edit">✎</span></span><span>$260.00</span></div>
+          <div class="r"><span>Car insurance</span><span class="amt">$260.00</span></div>
+          <div class="grp" style="background:#b9a8e055"><span><span class="sq" style="background:var(--subs)"></span>SUBSCRIPTIONS <span class="edit">✎</span></span><span>$20.97</span></div>
+          <div class="r"><span>Music</span><span class="amt">$10.99</span></div>
+          <div class="r"><span>Cloud storage</span><span class="amt">$9.98</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Reorder mode.</b> ↑ ↓ on every group and bill. “Internet” was just moved up. “Done” goes back to normal.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,526<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="bar"><b>Reorder bills</b><span class="done">Done</span></div>
+          <div class="grp" style="background:#f5d76e55;border-top:0"><span><span class="sq" style="background:var(--housing)"></span>HOUSING</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r moved"><span>Internet</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          <div class="grp" style="background:#9ccc9c55"><span><span class="sq" style="background:var(--auto)"></span>AUTO</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Car insurance</span><span class="ud"><span class="off">↑</span><span class="off">↓</span></span></div>
+          <div class="grp" style="background:#b9a8e055"><span><span class="sq" style="background:var(--subs)"></span>SUBSCRIPTIONS</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          <div class="r"><span>Music</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r"><span>Cloud storage</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="shot">
+    <p class="cap"><b>Saving the order failed.</b> The row moves back and the message shows in the bar.</p>
+    <div class="phone"><div class="scroll">
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,526<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="bar" style="display:block"><div style="display:flex;justify-content:space-between;align-items:center"><b>Reorder bills</b><span class="done">Done</span></div><p class="alert" style="margin-top:6px">Couldn't save the order. Check your connection and try again.</p></div>
+          <div class="grp" style="background:#f5d76e55;border-top:0"><span><span class="sq" style="background:var(--housing)"></span>HOUSING</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Internet</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          <div class="grp" style="background:#9ccc9c55"><span><span class="sq" style="background:var(--auto)"></span>AUTO</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Car insurance</span><span class="ud"><span class="off">↑</span><span class="off">↓</span></span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ================= LAPTOP ================= -->
+<h2 class="section">Laptop · both directions
+  <small>Left: A, the group sheet opens from the right. Right: B, reorder mode in the Bills card.</small></h2>
+<div class="row">
+  <div class="laptop dim" style="width:540px">
+    <div class="lap-inner" style="grid-template-columns:1fr;padding:18px">
+      <div class="lap-head"><h4>Oct 2026</h4></div>
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,526<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="add"><span>＋ Add bill</span></div>
+          <div class="grp" style="background:#f5d76e55;border-top:0"><span><span class="sq" style="background:var(--housing)"></span>HOUSING <span class="edit">✎</span></span><span>$2,245.00</span></div>
+          <div class="r"><span>Rent</span><span class="amt">$2,100.00</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side" style="width:330px">
+      <div class="sh"><h3>Housing</h3><span class="x">×</span></div>
+      <p class="meta">Group · 3 bills</p>
+      <div class="f"><div class="lbl">Name</div><div class="in">Housing</div></div>
+      <div class="f"><div class="lbl">Order</div>
+        <div class="list">
+          <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r moved"><span>Internet</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+        </div>
+      </div>
+      <div class="f"><div class="lbl"><span>Group position · 1st of 3</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div></div>
+      <div class="btns"><span class="b warn">Delete group</span><span class="b main">Save</span></div>
+    </div>
+  </div>
+
+  <div class="laptop" style="width:540px">
+    <div class="lap-inner" style="grid-template-columns:1fr;padding:18px">
+      <div class="lap-head"><h4>Oct 2026</h4></div>
+      <div class="card">
+        <div class="card-h"><span class="t"><span class="dot" style="background:var(--bills)"></span>Bills</span><span class="n">$2,526<i>▾</i></span></div>
+        <div class="card-b">
+          <div class="bar"><b>Reorder bills</b><span class="done">Done</span></div>
+          <div class="grp" style="background:#f5d76e55;border-top:0"><span><span class="sq" style="background:var(--housing)"></span>HOUSING</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r"><span>Rent</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+          <div class="r moved"><span>Internet</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Electricity</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          <div class="grp" style="background:#9ccc9c55"><span><span class="sq" style="background:var(--auto)"></span>AUTO</span><span class="ud"><span>↑</span><span>↓</span></span></div>
+          <div class="r"><span>Car insurance</span><span class="ud"><span class="off">↑</span><span class="off">↓</span></span></div>
+          <div class="grp" style="background:#b9a8e055"><span><span class="sq" style="background:var(--subs)"></span>SUBSCRIPTIONS</span><span class="ud"><span>↑</span><span class="off">↓</span></span></div>
+          <div class="r"><span>Music</span><span class="ud"><span class="off">↑</span><span>↓</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pick"><div>
+  <p><b>A</b> keeps the card simple and reorders one group at a time, next to the group's name and color.</p>
+  <p><b>B</b> shows everything at once and is quicker for a big reshuffle, but adds a mode to the card.</p>
+</div></div>
+
+</body>
+</html>

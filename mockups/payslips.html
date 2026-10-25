@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Payslip upload mockup</title>
+<style>
+  :root {
+    --ink: #1c1c1a; --ink2: #3f3f3b; --ink3: #5b5b57; --muted: #8a8a85; --faint: #a5a59f;
+    --line: #ecece7; --line2: #f1f1ec; --field: #e3e3de; --page: #fafaf8;
+    --income: #2f7d4f; --savings: #3a6ea5; --bills: #b7791f; --red: #c0392b; --warn: #b7791f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9e9e4; color: var(--ink); font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .intro { max-width: 1180px; margin: 0 auto; padding: 28px 16px 8px; }
+  .intro h1 { margin: 0 0 6px; font-size: 22px; }
+  .intro p { margin: 4px 0; color: var(--ink3); max-width: 820px; }
+  h2.section { max-width: 1180px; margin: 30px auto 10px; padding: 0 16px; font-size: 16px; }
+  h2.section small { display: block; font-weight: 400; font-size: 13px; color: var(--ink3); margin-top: 2px; }
+  .row { max-width: 1180px; margin: 0 auto 10px; padding: 0 16px; }
+
+  .laptop { width: 1100px; max-width: 100%; min-height: 560px; position: relative; overflow: hidden; border-radius: 14px; border: 8px solid #222; background: var(--page); display: flex; }
+  .nav { width: 170px; border-right: 1px solid var(--line); padding: 16px; font-size: 13px; color: var(--ink3); flex-shrink: 0; }
+  .nav p { margin: 0 0 14px; font-weight: 800; color: var(--ink); }
+  .nav div { padding: 7px 10px; border-radius: 10px; margin-bottom: 2px; }
+  .nav .on { background: #eeeee8; color: var(--ink); font-weight: 600; }
+  .lap { flex: 1; padding: 22px 30px; min-width: 0; }
+  h3.page { margin: 0 0 12px; font-size: 26px; font-weight: 800; }
+  .crumb { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+  .card-h { display: flex; justify-content: space-between; align-items: center; padding: 11px 14px; font-weight: 600; color: var(--ink2); }
+  .card-h i { font-style: normal; font-size: 12px; font-weight: 400; color: var(--faint); }
+  .r { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; font-size: 13px; border-top: 1px solid var(--line2); }
+  .r .sub { display: block; color: var(--muted); font-size: 11px; margin-top: 1px; }
+  .amt { font-variant-numeric: tabular-nums; text-align: right; }
+  .chev { color: var(--faint); margin-left: 6px; }
+  .add { padding: 9px 14px; font-size: 13px; font-weight: 600; border-top: 1px solid var(--line2); color: var(--ink2); }
+  .badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 1px; }
+  .badge.ok { color: var(--income); background: #e7f3ea; }
+  .badge.warn { color: var(--warn); background: #f7eddb; }
+  .badge.bad { color: var(--red); background: #f8e3e0; }
+  .badge.dup { color: var(--ink3); background: #ededE8; }
+
+  .drop { border: 2px dashed var(--field); border-radius: 16px; padding: 26px; text-align: center; color: var(--ink3); background: #fff; }
+  .drop b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  .drop .btn { display: inline-block; margin-top: 10px; border: 1px solid var(--field); border-radius: 10px; padding: 7px 14px; font-weight: 600; color: var(--ink); background: #fff; }
+  .drop small { display: block; margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+  .queue .r { padding: 9px 14px; }
+  .queue .r.sel { background: #f6f6f2; }
+  .bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line2); background: #fbfbf9; font-size: 13px; }
+  .b { display: inline-block; border-radius: 10px; padding: 8px 14px; font-size: 13px; }
+  .b.main { background: var(--ink); color: #fff; font-weight: 600; }
+  .b.ghost { border: 1px solid var(--field); color: var(--ink3); background: #fff; }
+  .b.busy { opacity: .6; }
+
+  .two { display: grid; grid-template-columns: 380px 1fr; gap: 14px; align-items: start; }
+  .pdf { background: #fff; border: 1px solid var(--line); border-radius: 16px; height: 440px; display: flex; flex-direction: column; overflow: hidden; }
+  .pdf .t { padding: 8px 12px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line2); display: flex; justify-content: space-between; }
+  .pdf .pg { flex: 1; margin: 12px; background: #fff; border: 1px solid var(--line2); box-shadow: 0 2px 10px rgba(0,0,0,.06); padding: 14px; font-size: 9px; color: #777; line-height: 1.5; overflow: hidden; }
+  .pdf .pg b { color: #444; }
+  .pdf .pg .ln { display: flex; justify-content: space-between; }
+
+  .f { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 10px 14px 4px; }
+  .f label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 3px; }
+  .in { border: 1px solid var(--field); border-radius: 10px; padding: 6px 10px; font-size: 13px; background: #fff; min-height: 32px; display: flex; justify-content: space-between; align-items: center; }
+  .in .c { color: var(--faint); font-size: 11px; }
+  .in.bad { border-color: var(--red); }
+  table.lines { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.lines th { text-align: left; font-size: 10px; letter-spacing: .06em; color: var(--muted); padding: 10px 14px 4px; font-weight: 700; }
+  table.lines td { padding: 6px 14px; border-top: 1px solid var(--line2); vertical-align: middle; }
+  table.lines td.n, table.lines th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  table.lines .sec td { padding-top: 9px; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: var(--muted); border-top: 0; }
+  table.lines .edit { border: 1px solid var(--field); border-radius: 8px; padding: 3px 8px; display: inline-block; min-width: 92px; text-align: right; }
+  table.lines .tag { border: 1px solid var(--field); border-radius: 8px; padding: 3px 8px; display: inline-flex; gap: 6px; align-items: center; font-size: 11px; color: var(--ink3); }
+  table.lines tr.unknown td { background: #fdf6e7; }
+  table.lines tr.unknown .tag { border-color: #e9c988; color: var(--warn); }
+  table.lines .x { color: var(--faint); font-size: 14px; }
+  .recon { margin: 10px 14px; border-radius: 12px; padding: 9px 12px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .recon.ok { background: #e7f3ea; color: #24603b; }
+  .recon.bad { background: #f8e3e0; color: #8f2b22; }
+  .recon b { font-variant-numeric: tabular-nums; }
+  .note { max-width: 1180px; margin: 20px auto 50px; padding: 0 16px; }
+  .note div { background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); max-width: 820px; }
+  .note p { margin: 4px 0; color: var(--ink3); }
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Payslips: upload, review, save</h1>
+  <p>Desktop only. Placeholder data; employer and figures are made up. The PDF goes to the server once to read its text and is then discarded; only the figures are saved after review. The preview on the review screen is drawn in the browser from the file you picked, never uploaded for display.</p>
+</div>
+
+<!-- ======== 1 PLAN › PAYSLIPS ======== -->
+<h2 class="section">1 · Where it lives: Plan › Payslips
+  <small>A Payslips card on the Plan screen lists what's saved, newest first, with an upload area on top.</small></h2>
+<div class="row">
+  <div class="laptop">
+    <div class="nav"><p>Sumday</p><div>Home</div><div>Summary</div><div class="on">Plan</div></div>
+    <div class="lap">
+      <h3 class="page">Plan</h3>
+      <div class="card">
+        <div class="card-h">Payslips <i>Workday layout · 11 saved</i></div>
+        <div style="padding:12px 14px 0">
+          <div class="drop">
+            <b>Drop payslip PDFs here</b>
+            Pick one or more. Each is read once, then forgotten.
+            <span class="btn">Choose files</span>
+            <small>Only the figures are saved, never the PDF.</small>
+          </div>
+        </div>
+        <div class="r"><span>Oct 3, 2026 <span class="badge ok">RECONCILED</span><span class="sub">Example Co · regular · 13 lines</span></span><span class="amt">Net $2,518.47<span class="chev">›</span></span></div>
+        <div class="r"><span>Sep 19, 2026 <span class="badge ok">RECONCILED</span><span class="sub">Example Co · regular · 13 lines</span></span><span class="amt">Net $2,518.47<span class="chev">›</span></span></div>
+        <div class="r"><span>Sep 5, 2026 <span class="badge warn">⚠ OFF BY $0.50</span><span class="sub">Example Co · regular · 12 lines</span></span><span class="amt">Net $2,517.97<span class="chev">›</span></span></div>
+        <div class="r"><span>Aug 29, 2026 <span class="badge ok">RECONCILED</span><span class="sub">Northwind Labs · severance · 7 lines</span></span><span class="amt">Net $6,140.00<span class="chev">›</span></span></div>
+        <div class="add">Show all 11</div>
+      </div>
+      <div class="card"><div class="card-h">Jobs</div><div class="r" style="color:var(--muted)">(as in the Plan mockup)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 2 QUEUE ======== -->
+<h2 class="section">2 · After picking files: the review queue
+  <small>Each file is parsed as soon as it's picked. Ready ones can be saved together; anything flagged must be opened.</small></h2>
+<div class="row">
+  <div class="laptop">
+    <div class="nav"><p>Sumday</p><div>Home</div><div>Summary</div><div class="on">Plan</div></div>
+    <div class="lap">
+      <div class="crumb">Plan › Payslips</div>
+      <h3 class="page">Review 4 payslips</h3>
+      <div class="card queue">
+        <div class="r"><span>10-17-2026.pdf <span class="badge ok">READY</span><span class="sub">Example Co · Oct 17, 2026 · regular · reconciles</span></span><span class="amt">Net $2,518.47<span class="chev">›</span></span></div>
+        <div class="r"><span>10-31-2026.pdf <span class="badge warn">CHECK</span><span class="sub">Example Co · Oct 31, 2026 · 1 unknown line: “Wellness Stipend”</span></span><span class="amt">Net $2,568.47<span class="chev">›</span></span></div>
+        <div class="r"><span>10-03-2026.pdf <span class="badge dup">DUPLICATE</span><span class="sub">Same employer, date and net as a saved payslip · won't be saved</span></span><span class="amt">Net $2,518.47<span class="chev">›</span></span></div>
+        <div class="r"><span>scan.pdf <span class="badge bad">COULDN'T READ</span><span class="sub">No text in this PDF and no parser matched. AI reading comes in a later step.</span></span><span class="amt">—</span></div>
+        <div class="bar">
+          <span>1 ready · 1 to check · 1 duplicate · 1 unreadable</span>
+          <span><span class="b ghost">Cancel</span> &nbsp;<span class="b main">Save 1 ready</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 3 REVIEW ======== -->
+<h2 class="section">3 · Reviewing one payslip
+  <small>PDF preview on the left; the parsed header and lines on the right, every amount editable. The banner checks gross − deductions = net.</small></h2>
+<div class="row">
+  <div class="laptop" style="min-height:640px">
+    <div class="nav"><p>Sumday</p><div>Home</div><div>Summary</div><div class="on">Plan</div></div>
+    <div class="lap">
+      <div class="crumb">Plan › Payslips › Review 4 payslips</div>
+      <h3 class="page" style="font-size:20px">10-31-2026.pdf <span class="badge warn">CHECK</span></h3>
+      <div class="two">
+        <div class="pdf">
+          <div class="t"><span>Preview · drawn in your browser</span><span>page 1 of 1</span></div>
+          <div class="pg">
+            <b>Example Co · Pay Slip</b><br>Pay Period 10/16/2026 - 10/31/2026 &nbsp; Check Date 10/31/2026<br><br>
+            <b>Earnings</b><div class="ln"><span>Regular Pay</span><span>3,653.85</span></div><div class="ln"><span>Wellness Stipend</span><span>50.00</span></div>
+            <b>Employee Taxes</b><div class="ln"><span>OASDI</span><span>229.64</span></div><div class="ln"><span>Medicare</span><span>53.71</span></div><div class="ln"><span>Federal Withholding</span><span>512.30</span></div><div class="ln"><span>State Tax - CA</span><span>181.57</span></div>
+            <b>Pre Tax Deductions</b><div class="ln"><span>401k</span><span>219.23</span></div><div class="ln"><span>HSA EE</span><span>39.23</span></div>
+            <b>Employer Paid Benefits</b><div class="ln"><span>401k Match</span><span>146.15</span></div><div class="ln"><span>Medical</span><span>412.00</span></div>
+            <div class="ln"><b>Gross Pay</b><b>3,703.85</b></div><div class="ln"><b>Net Pay</b><b>2,568.47</b></div>
+          </div>
+        </div>
+        <div class="card" style="margin:0">
+          <div class="f">
+            <div><label>Job</label><div class="in">Example Co <span class="c">▾</span></div></div>
+            <div><label>Check date</label><div class="in">Oct 31, 2026</div></div>
+            <div><label>Pay type</label><div class="in">Regular <span class="c">▾</span></div></div>
+            <div><label>Period</label><div class="in">Oct 16 – Oct 31</div></div>
+          </div>
+          <table class="lines">
+            <tr><th>LINE</th><th>COUNTS AS</th><th class="n">AMOUNT</th><th></th></tr>
+            <tr class="sec"><td colspan="4">EARNINGS</td></tr>
+            <tr><td>Regular Pay</td><td><span class="tag">Base pay ▾</span></td><td class="n"><span class="edit">3,653.85</span></td><td class="x">×</td></tr>
+            <tr class="unknown"><td>Wellness Stipend <span class="badge warn">NEW LABEL</span></td><td><span class="tag">Other ▾</span></td><td class="n"><span class="edit">50.00</span></td><td class="x">×</td></tr>
+            <tr class="sec"><td colspan="4">TAXES</td></tr>
+            <tr><td>OASDI</td><td><span class="tag">Social Security ▾</span></td><td class="n"><span class="edit">229.64</span></td><td class="x">×</td></tr>
+            <tr><td>Medicare</td><td><span class="tag">Medicare ▾</span></td><td class="n"><span class="edit">53.71</span></td><td class="x">×</td></tr>
+            <tr><td>Federal Withholding</td><td><span class="tag">Federal ▾</span></td><td class="n"><span class="edit">512.30</span></td><td class="x">×</td></tr>
+            <tr><td>State Tax - CA</td><td><span class="tag">State ▾</span></td><td class="n"><span class="edit">181.57</span></td><td class="x">×</td></tr>
+            <tr class="sec"><td colspan="4">PRE-TAX DEDUCTIONS</td></tr>
+            <tr><td>401k</td><td><span class="tag">401(k) traditional ▾</span></td><td class="n"><span class="edit">219.23</span></td><td class="x">×</td></tr>
+            <tr><td>HSA EE</td><td><span class="tag">HSA ▾</span></td><td class="n"><span class="edit">39.23</span></td><td class="x">×</td></tr>
+            <tr class="sec"><td colspan="4">EMPLOYER PAID</td></tr>
+            <tr><td>401k Match</td><td><span class="tag">401(k) match ▾</span></td><td class="n"><span class="edit">146.15</span></td><td class="x">×</td></tr>
+          </table>
+          <div class="f" style="grid-template-columns:1fr 1fr;padding-top:12px">
+            <div><label>Gross</label><div class="in">3,703.85</div></div>
+            <div><label>Net</label><div class="in">2,568.47</div></div>
+          </div>
+          <div class="recon ok">Gross − taxes − deductions = net <b>✓ reconciles</b></div>
+          <div class="bar"><span><span class="b ghost">‹ Previous</span> &nbsp;<span class="b ghost">Next ›</span></span><span><span class="b ghost">Skip this one</span> &nbsp;<span class="b main">Save payslip</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 3b VERIFY ======== -->
+<h2 class="section">3b · Verify against the job
+  <small>Under the lines: what the payslip implies versus what Jobs says for that date. Nothing changes until you choose to.</small></h2>
+<div class="row">
+  <div class="laptop" style="min-height:330px">
+    <div class="nav"><p>Sumday</p><div>Home</div><div>Summary</div><div class="on">Plan</div></div>
+    <div class="lap">
+      <div class="card" style="max-width:640px">
+        <div class="card-h">Compared with Example Co on Oct 31, 2026 <i>from Jobs</i></div>
+        <table class="lines">
+          <tr><th>WHAT</th><th class="n">PAYSLIP</th><th class="n">JOB SAYS</th><th></th></tr>
+          <tr><td>401(k) traditional</td><td class="n">6.0% of gross</td><td class="n">5.0%</td><td><span class="badge warn">DIFFERS</span></td></tr>
+          <tr><td>401(k) Roth</td><td class="n">0%</td><td class="n">0%</td><td><span class="badge ok">OK</span></td></tr>
+          <tr><td>Employer match</td><td class="n">$146.15 = 4.0%</td><td class="n">4.0% · 100% on first 3%, 50% on next 2% at 6% contributed</td><td><span class="badge ok">OK</span></td></tr>
+          <tr><td>HSA</td><td class="n">$39.23</td><td class="n">$85/mo ≈ $39.23</td><td><span class="badge ok">OK</span></td></tr>
+          <tr><td>Taxes</td><td class="n">26.4% of gross</td><td class="n">24% (estimate)</td><td><span class="badge dup">INFO</span></td></tr>
+          <tr><td>Gross per paycheck</td><td class="n">$3,703.85</td><td class="n">$3,653.85 from $95,000/yr</td><td><span class="badge dup">+$50 stipend</span></td></tr>
+        </table>
+        <div class="bar">
+          <span style="font-size:12px;color:var(--ink3)">Taxes are only ever an estimate; a difference there is shown, not fixed.</span>
+          <span><span class="b ghost">Leave job as is</span> &nbsp;<span class="b main">Update job from Oct 16: 401(k) 6%</span></span>
+        </div>
+      </div>
+      <div class="card" style="max-width:640px">
+        <div class="card-h">Employer match rule <i>in the job's pay change sheet</i></div>
+        <div class="f" style="grid-template-columns:1fr 1fr 1fr 1fr">
+          <div><label>Match</label><div class="in">Tiered <span class="c">▾</span></div></div>
+          <div><label>100% of first</label><div class="in">3 %</div></div>
+          <div><label>then 50% of next</label><div class="in">2 %</div></div>
+          <div><label>＋ tier</label><div class="in" style="color:var(--faint)">—</div></div>
+        </div>
+        <p style="margin:0 14px 12px;font-size:11px;color:var(--muted)">A flat match is one tier: “100% of first 6%”. The estimate, this check and the 401(k) helper all use the same rule.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 3c FROM HOME ======== -->
+<h2 class="section">3c · Upload from an estimated paycheck on Home
+  <small>Desktop only. Tap an estimated paycheck, pick its PDF, review it with the job and date prefilled, and land back on Home with the real figure.</small></h2>
+<div class="row">
+  <div class="laptop" style="min-height:300px">
+    <div class="nav"><p>Sumday</p><div class="on">Home</div><div>Summary</div><div>Plan</div></div>
+    <div class="lap">
+      <div class="card" style="max-width:420px">
+        <div class="card-h">Wage (Example Co)</div>
+        <div style="padding:0 14px 12px;font-size:12px;color:var(--muted)">Oct 17 · expected $2,518.47</div>
+        <div style="margin:0 14px 12px;background:#f6f6f2;border-radius:12px;padding:8px 10px;font-size:12px;color:var(--ink3)">Estimated from your job's pay. Change pay in Plan › Jobs. The real amount replaces this when you add the payslip.</div>
+        <div class="bar"><span style="font-size:11px;color:var(--muted)">Reads the PDF once; never stores it.</span><span class="b main">Upload payslip</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--ink3);max-width:560px;margin:4px 0 0">→ Review screen (3) with Job = Example Co and Check date = Oct 17 already set. A different date or job in the PDF shows as DIFFERS. After Save, back to Home on October, where the paycheck now shows the saved net.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 4 STATES ======== -->
+<h2 class="section">4 · Review states
+  <small>Doesn't reconcile · first payslip with no job yet · saving.</small></h2>
+<div class="row">
+  <div class="laptop" style="min-height:300px">
+    <div class="nav"><p>Sumday</p><div>Home</div><div>Summary</div><div class="on">Plan</div></div>
+    <div class="lap">
+      <div class="card" style="max-width:560px">
+        <div class="card-h">Doesn't reconcile</div>
+        <div class="recon bad">Gross − taxes − deductions is <b>$0.50 more</b> than net. Check a line, or save anyway and fix later.</div>
+        <div class="bar"><span></span><span><span class="b ghost">Save anyway ⚠</span></span></div>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="card-h">No job yet</div>
+        <div class="f" style="grid-template-columns:2fr 1fr">
+          <div><label>Job</label><div class="in">＋ New job: “Example Co” <span class="c">▾</span></div></div>
+          <div><label>Pays</label><div class="in">Every 2 weeks <span class="c">▾</span></div></div>
+        </div>
+        <p style="margin:0 14px 12px;font-size:11px;color:var(--muted)">The employer name on the payslip is suggested. The job is created when you save.</p>
+      </div>
+      <div class="card" style="max-width:560px">
+        <div class="bar"><span>Saving 3 of 4…</span><span class="b main busy">Saving…</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="note"><div>
+  <p><b>Save</b> writes the payslip, its lines and one received income entry for the net amount, dated the check date, in a single transaction. On Home that entry replaces the estimated paycheck, and 401(k) match / HSA show under Savings.</p>
+  <p><b>Duplicates</b> (same job, check date and net as a saved payslip) are flagged and never saved twice.</p>
+  <p><b>Skipped uploads:</b> a payday that has passed keeps its estimated paycheck as received income (marked estimated) until a payslip replaces it, so months stay right when you only upload payslips that differ.</p>
+  <p><b>Later:</b> AI reading for unknown layouts and scans (the AI step), and tapping a saved payslip to view or delete it.</p>
+</div></div>
+
+</body>
+</html>
